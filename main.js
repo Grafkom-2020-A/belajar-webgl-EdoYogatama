@@ -64,7 +64,21 @@ function main() {
   var offset = 0;
   var count = 6;  // Jumlah verteks yang akan digambar
 
+  var dx = 0;
+  var dy = 0;
+  var dz = 0;
+  var uDx = gl.getUniformLocation(shaderProgram, 'dx');
+  var uDy = gl.getUniformLocation(shaderProgram, 'dy');
+  var uDz = gl.getUniformLocation(shaderProgram, 'dz');
+  
+
   function render() {
+    dx += 0.001;
+    dy += 0.001;
+    dz += 0.001;
+    gl.uniform1f(uDx, dx);
+    gl.uniform1f(uDy, dy);
+    gl.uniform1f(uDz, dz);
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArrays(primitive, offset, count);
