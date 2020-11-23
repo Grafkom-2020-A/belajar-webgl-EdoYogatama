@@ -64,21 +64,34 @@ function main() {
   var offset = 0;
   var count = 6;  // Jumlah verteks yang akan digambar
 
-  var dx = 0;
-  var dy = 0;
-  var dz = 0;
-  var uDx = gl.getUniformLocation(shaderProgram, 'dx');
-  var uDy = gl.getUniformLocation(shaderProgram, 'dy');
-  var uDz = gl.getUniformLocation(shaderProgram, 'dz');
-  
+  var model = glMatrix.mat4.create();
+  var view = glMatrix.mat4.create();
+  glMatrix.mat4.lookAt(view,
+    [0.0, 0.0, 0.0], // di mana posisi kamera (posisi)
+    [0.0, 0.0, -2.0], // ke mana kamera menghadap (vektor)
+    [0.0, 1.0, 0.0] // ke mana arah atas kamera (vektor)
+    );
+  var projection = glMatrix.mat4.create();
+  glMatrix.mat4.perspective(projection, 
+    glMatrix.glMatrix.toRadian(90), // fov dalam radian
+    1.0,  // rasio aspek
+    0.5,  // near
+    10.0  // far
+    );
+  var uModel = gl.getUniformLocation(shaderProgram, 'model');
+  var uView = gl.getUniformLocation(shaderProgram, 'view');
+  var uProjection = gl.getUniformLocation(shaderProgram, 'projection');
+
+  var dz = 0.0;
 
   function render() {
-    dx += 0.001;
-    dy += 0.001;
     dz += 0.001;
-    gl.uniform1f(uDx, dx);
-    gl.uniform1f(uDy, dy);
-    gl.uniform1f(uDz, dz);
+    // Tambah translasi ke matriks model
+    model = glMatrix.mat4.create();
+    glMatrix.mat4.translate(model, model, [0.0, 0.0, dz]);
+    gl.uniformMatrix4fv(uModel, false, model);
+    gl.uniformMatrix4fv(uView, false, view);
+    gl.uniformMatrix4fv(uProjection, false, projection);
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArrays(primitive, offset, count);
